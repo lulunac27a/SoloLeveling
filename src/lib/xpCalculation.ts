@@ -62,6 +62,7 @@ export function clampBodyweight(bodyweight: number | null | undefined): number {
  * Lower reps = heavier weight = higher intensity
  */
 export function calculateIntensityFactor(reps: number): number {
+  if (reps <= 3) return 1.5;
   if (reps <= 5) return 1.3;
   if (reps <= 8) return 1.15;
   if (reps <= 12) return 1.0;
@@ -141,7 +142,8 @@ export function getFatigueModifier(fatigueLevel: number): number {
   if (fatigueLevel < 40) return 1.0;
   if (fatigueLevel < 60) return 0.85;
   if (fatigueLevel < 80) return 0.7;
-  return 0.55; // fatigue >= 80
+  if (fatigueLevel < 90) return 0.6;
+  return 0.55; // fatigue >= 90
 }
 
 /**
@@ -152,16 +154,17 @@ export function getConsistencyMultiplier(sessionsThisWeek: number): number {
   if (sessionsThisWeek >= 5) return 1.25;
   if (sessionsThisWeek === 4) return 1.2;
   if (sessionsThisWeek === 3) return 1.1;
-  return 1.0; // 1-2 sessions
+  if (sessionsThisWeek === 2) return 1.05;
+  return 1.0; // 1 session
 }
 
 /**
  * STEP 7 - Apply XP Bounds
  * Minimum: 20 XP per completed session
- * Maximum: 120 XP per session
+ * Maximum: 150 XP per session
  */
 export function applyXPBounds(xp: number): number {
-  return Math.max(20, Math.min(120, Math.round(xp)));
+  return Math.max(20, Math.min(150, Math.round(xp)));
 }
 
 /**
@@ -237,6 +240,7 @@ export function getSystemMessage(xp: number): string {
  * Classify workout type based on XP
  */
 export function classifyWorkout(xp: number): string {
+  if (xp >= 125) return "Extreme intensity session";
   if (xp >= 100) return "Very intense session";
   if (xp >= 70) return "Heavy compound day";
   if (xp >= 45) return "Normal hypertrophy";
